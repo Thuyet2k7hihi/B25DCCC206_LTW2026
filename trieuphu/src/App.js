@@ -1,10 +1,13 @@
 const BUILD_TAG = "tp-4186";
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import { QuestionBank, QuestionDetail } from './pages/Questions';
+import Home from './pages/Home';
+import Play from './pages/Play';
+import Result from './pages/Result';
 import NotFound from './pages/NotFound';
 
 const Placeholder = ({ text }) => <div className="state-panel"><h2>{text}</h2></div>;
@@ -23,12 +26,14 @@ export default function App() {
     return () => controller.abort();
   }, []);
 
+  const saveResult = useCallback(() => {}, []); // Lưu lịch sử sẽ triển khai ở Bài 3.
+
   return <div data-build={BUILD_TAG}><Routes><Route path="/" element={<Layout loading={loading} error={error} />}>
-    <Route index element={<Placeholder text="Trang chủ" />} />
+    <Route index element={<Home playerName={playerName} onPlayerNameChange={setPlayerName} />} />
     <Route path="questions" element={<QuestionBank questions={questions} />} />
     <Route path="questions/:id" element={<QuestionDetail questions={questions} />} />
-    <Route path="play" element={playerName.trim() ? <Placeholder text="Màn hình chơi" /> : <Navigate to="/" replace />} />
-    <Route path="result" element={<Placeholder text="Kết quả lượt chơi" />} />
+    <Route path="play" element={playerName.trim() ? <Play questions={questions} playerName={playerName} onSaveResult={saveResult} /> : <Navigate to="/" replace />} />
+    <Route path="result" element={<Result />} />
     <Route path="history" element={<Placeholder text="Lịch sử các lượt chơi" />} />
     <Route path="*" element={<NotFound />} />
   </Route></Routes></div>;
